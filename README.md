@@ -2,9 +2,9 @@
 
 As a software engineering student, I created this mobile application to expand my understanding of Android development and learn how to transition a console-based Kotlin program into a mobile app with a graphical user interface.
 
-This app is a Sleep Tracker mobile application built with Kotlin and Jetpack Compose. The user enters the number of hours they slept, then taps the "Check Sleep" button. The app evaluates the sleep duration and displays a sleep quality category such as Great Sleep, Good Sleep, Fair Sleep, Poor Sleep, or Deprived Sleep. The app also keeps track of the total number of sleep entries and calculates the average sleep hours.
+This app is a Sleep Tracker mobile application built with Kotlin and Jetpack Compose. The user enters the number of hours they slept, then taps the "Check Sleep" button. The app evaluates the sleep duration and displays a sleep quality category such as Great Sleep, Good Sleep, Fair Sleep, Poor Sleep, or Deprived Sleep. The app also includes a Sleep History screen where users can view previously entered sleep records. 
 
-The purpose of creating this app was to gain hands-on experience with Android mobile app development, state management, user input handling, event-driven programming, and Jetpack Compose UI design. This project also helped me understand how to reuse logic from a previous Kotlin console application and adapt it into a modern mobile application.
+The purpose of creating this app was to gain hands-on experience with Android development, Jetpack Compose, state management, and navigation between multiple screens.
 
 # Development Environment
 
