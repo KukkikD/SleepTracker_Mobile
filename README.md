@@ -1,27 +1,40 @@
 # Overview
 
-As a software engineering student, I created this mobile application to expand my understanding of Android development and learn how to transition a console-based Kotlin program into a mobile app with a graphical user interface.
+As a software engineering student, I created this mobile application to learn Android development, cloud databases, and how to extend a mobile application with cloud-based data storage.
 
-This app is a Sleep Tracker mobile application built with Kotlin and Jetpack Compose. The user enters the number of hours they slept, then taps the "Check Sleep" button. The app evaluates the sleep duration and displays a sleep quality category such as Great Sleep, Good Sleep, Fair Sleep, Poor Sleep, or Deprived Sleep. The app also includes a Sleep History screen where users can view previously entered sleep records. 
+This app is a Sleep Tracker mobile application built with Kotlin, Jetpack Compose, and Firebase Firestore. Users enter the number of hours they slept and tap the "Check Sleep" button. The application evaluates the sleep duration and displays a sleep quality category such as Great Sleep, Good Sleep, Fair Sleep, Poor Sleep, or Deprived Sleep.
 
-The purpose of creating this app was to gain hands-on experience with Android development, Jetpack Compose, state management, and navigation between multiple screens.
+The application stores sleep records in Firebase Firestore, allowing data to remain available even after the application is closed. Users can view their sleep history, update existing records, and delete records from the cloud database.
+
+The purpose of this project was to gain hands-on experience with Android development, cloud databases, Firebase Firestore integration, CRUD operations (Create, Read, Update, Delete), and Jetpack Compose user interface development.
 
 # Development Environment
 
 The tools used to develop this application include:
 
-- Android Studio
-- Android Emulator (Pixel 4)
-- Kotlin
-- Jetpack Compose
-- Gradle build system
+* Android Studio
+* Android Emulator
+* Kotlin
+* Jetpack Compose
+* Firebase Firestore
+* Gradle Build System
 
 Programming language and libraries used:
 
-- Kotlin
-- Jetpack Compose for building the user interface
-- Android SDK
-- Material Design components
+* Kotlin
+* Jetpack Compose
+* Android SDK
+* Material Design 3
+* Firebase Firestore
+* Firebase Authentication (if implemented)
+
+# Features
+* Create sleep records in Firebase Firestore
+* Read sleep history from Firestore
+* Update existing sleep records
+* Delete sleep records
+* Cloud-based persistent storage
+* Sleep quality classification
 
 # Useful Websites
 
@@ -29,11 +42,15 @@ Programming language and libraries used:
 * [Jetpack Compose Documentation](https://developer.android.com/jetpack/compose)
 * [Kotlin Official Documentation](https://kotlinlang.org/docs/home.html)
 * [Stack Overflow](https://stackoverflow.com/)
+* [Firebase Firestore Documentation](https://firebase.google.com/docs/firestore)
+* [Firebase Setup for Android](https://firebase.google.com/docs/android/setup)
+* [Cloud Database and Firebase Tutorials](https://www.youtube.com/@freecodecamp)
+* [Firebase and Firestore Tutorials](https://www.youtube.com/@Fireship)
 
 # Future Work
 
 * Add input validation to prevent unrealistic sleep values
 * Improve the user interface design with better colors and layout
-* Add persistent storage so sleep records remain saved after closing the app
+* Implement Firebase Authentication for multiple users
 * Allow users to enter sleep dates instead of only hours
 * Add charts or graphs to visualize sleep history

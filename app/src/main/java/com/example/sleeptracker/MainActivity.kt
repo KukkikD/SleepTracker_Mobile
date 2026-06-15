@@ -16,9 +16,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.firestore.FirebaseFirestore
 
 // Data class to store one sleep record
-data class SleepRecord(val day: Int, val hours: Int)
+data class SleepRecord(val id: String = "",
+                       val userId: String = "",
+                       val day: Int = 0,
+                       val hours: Int = 0,
+                       val category: String = "",
+                       val createdAt: String = "")
 
 // Function to determine sleep quality based on hours
 fun getSleepCategory(hours: Int): String {
@@ -143,15 +149,34 @@ fun SleepTrackerApp(navController: NavController) {
 
                     // Create one new sleep record
                     val newRecord = SleepRecord(
+                        userId = "test123",
                         day = sleepHistory.size + 1,
-                        hours = hours
+                        hours = hours,
+                        category = category,
+                        createdAt = System.currentTimeMillis().toString()
                     )
 
                     // Add the new record to the shared history list
                     sleepHistory.add(newRecord)
 
-                    // Update result message
-                    resultText = "You slept $hours hours.\n$category"
+                    // Save history to cloud database (Firestore)
+                    val db = FirebaseFirestore.getInstance()
+
+                    //Firestore created id
+                    val documentRef = db.collection("sleepRecords").document()
+
+                    val recordWithId = newRecord.copy(
+                        id = documentRef.id
+                    )
+
+                    documentRef.set(recordWithId)
+                        .addOnSuccessListener  {
+                            // Update result message
+                            resultText = "Saved to Firestore!\nYou slept $hours hours.\n$category"
+                        }
+                        .addOnFailureListener {
+                            resultText = "Error saving to Firestore."
+                        }
 
                     // Clear the input field after submission
                     sleepInput = ""
@@ -192,12 +217,31 @@ fun SleepTrackerApp(navController: NavController) {
 // Composable function for the sleep history screen
 @Composable
 fun SleepHistoryScreen(navController: NavController) {
+    var records by remember { mutableStateOf<List<SleepRecord>>(emptyList()) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("sleepRecords")
+            .get()
+            .addOnSuccessListener { result ->
+                val recordList = result.documents.mapNotNull { document ->
+                    document.toObject(SleepRecord::class.java)
+                }
+
+                records = recordList
+            }
+            .addOnFailureListener {
+                errorMessage = "Error loading sleep records."
+            }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
     ) {
-        // History screen title
         Text(
             text = "Sleep History",
             style = MaterialTheme.typography.headlineLarge,
@@ -207,20 +251,88 @@ fun SleepHistoryScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Show message if there are no records
-        if (sleepHistory.isEmpty()) {
+        if (errorMessage.isNotEmpty()) {
+            Text(errorMessage)
+        } else if (records.isEmpty()) {
             Text("No sleep records yet.")
         } else {
-            // Show each sleep record
-            for (record in sleepHistory) {
-                Text("Day ${record.day}: ${record.hours} hours")
+            for (record in records) {
+
+                Text(
+                    "Day ${record.day}: ${record.hours} hours - ${record.category}"
+                )
+
+                //Add "Edit" button & "Delete" button in the same row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // "Edit" button from DB by +1
+                    Button(
+                        onClick = {
+                            if (record.id.isBlank()) {
+                                errorMessage = "This old record cannot be updated because it has no document ID."
+                                return@Button
+                            }
+
+                            val db = FirebaseFirestore.getInstance()
+                            val newHours = record.hours + 1
+                            val newCategory = getSleepCategory(newHours)
+
+                            db.collection("sleepRecords")
+                                .document(record.id)
+                                .update(
+                                    mapOf(
+                                        "hours" to newHours,
+                                        "category" to newCategory
+                                    )
+                                )
+                                .addOnSuccessListener {
+                                    records = records.map {
+                                        if (it.id == record.id) {
+                                            it.copy(hours = newHours, category = newCategory)
+                                        } else {
+                                            it
+                                        }
+                                    }
+                                }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Update")
+                    }
+
+                    // "Delete" button and delete from DB
+                    Button(
+                        onClick = {
+                            if (record.id.isBlank()) {
+                                errorMessage = "This old record cannot be deleted because it has no document ID."
+                                return@Button
+                            }
+
+                            val db = FirebaseFirestore.getInstance()
+
+                            db.collection("sleepRecords")
+                                .document(record.id)
+                                .delete()
+                                .addOnSuccessListener {
+                                    records = records.filter {
+                                        it.id != record.id
+                                    }
+                                }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Delete")
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Button to return to the main screen
         Button(
             onClick = {
                 navController.popBackStack()
